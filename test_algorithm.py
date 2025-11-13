@@ -3,7 +3,8 @@ import json
 from CliqueAI.clique_algorithms import (networkx_algorithm,
                                         scattering_clique_algorithm,
                                         clipper,
-                                        ant_colony_algorithm)
+                                        ant_colony_algorithm,
+                                        mcp)
 from CliqueAI.protocol import MaximumCliqueOfLambdaGraph
 
 data_paths = [
@@ -49,8 +50,11 @@ def main():
         synapse = get_test_data(data_path)
         print(f"Testing data from {data_path} with {synapse.number_of_nodes} nodes")
         # put your algorithm here
-        run(clipper, synapse)
+        run(mcp, synapse)
 
 
 if __name__ == "__main__":
     main()
+
+# [3, 9, 11, 13, 24, 30, 32, 37, 41, 42, 57, 63, 68, 70, 72, 76, 77, 80, 82]
+# [1, 2, 8, 11, 19, 20, 26, 32, 41, 42, 44, 46, 51, 65, 70, 73, 75, 79, 81]

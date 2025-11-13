@@ -28,6 +28,9 @@ class Miner(BaseMinerNeuron):
     async def forward_graph(
         self, synapse: MaximumCliqueOfLambdaGraph
     ) -> MaximumCliqueOfLambdaGraph:
+        bt.logging.info(
+            f"Synapse Recieved! {synapse.number_of_nodes}"
+        )
         codec = GraphCodec()
         adjacency_matrix = codec.decode_matrix(synapse.encoded_matrix)
         adjacency_list = codec.matrix_to_list(adjacency_matrix)

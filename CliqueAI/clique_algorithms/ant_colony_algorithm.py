@@ -132,4 +132,5 @@ def ant_colony_algorithm(number_of_nodes: int, adjacency_list: list[list[int]]) 
     
     # Return the best clique as a sorted list of node indices
     best_clique = sorted(ant_clique_solver.best_clique_info['clique'])
+    print("Max Cliques: ", [int(x) for x in best_clique])
     return [int(x) for x in best_clique]
