@@ -21,6 +21,8 @@ For an explanation of the code see http://shah.freeshell.org/clique/.
 #include <ctime>
 #include <string.h>
 #include <string>
+#include "gaClique.h"
+
 using namespace std;
 
 int NUMBER_NODES;     // populated automatically by processData
@@ -526,7 +528,7 @@ void processData(const char * filename)
 /* Generate the population for the genetic algorithm randomly */
 vector<Clique> generateRandomPopulation()
 {
-	printf("\nGenerating Population...");
+	// printf("\nGenerating Population...");
 	vector<Clique> population;
    population.reserve(POPULATION);
    bool * flags = new bool[NUMBER_NODES];
@@ -922,7 +924,7 @@ std::vector<int> run_max_clique(const std::string& filename, int generations) {
 
       localImprovement(gBest);
       newPopulation.push_back(gBest);
-      printf("\n%d:%lu",n, gBest.clique.size());
+      // printf("\n%d:%lu",n, gBest.clique.size());
       /*for(int i=0; i<POPULATION; i++)
       {
       	printf("%d ", population.at(i).clique.size());
@@ -944,9 +946,6 @@ std::vector<int> run_max_clique(const std::string& filename, int generations) {
       population.swap(newPopulation);
       newPopulation.erase(newPopulation.begin(), newPopulation.end());
    }
-
-   
-
     std::vector<int> result;
     for(int i=0; i<gBest.clique.size(); i++)
         result.push_back(gBest.clique.at(i)+1);
@@ -955,25 +954,25 @@ std::vector<int> run_max_clique(const std::string& filename, int generations) {
 }
 
 /* Main */
-int main(int argc, char * argv[])
-{
-    srand(time(NULL));
-    if(argc < 3)
-    {
-        printf("\nUsage: ./a.out filename iterations\n\n");
-        exit(0);
-    }
+// int main(int argc, char * argv[])
+// {
+//     srand(time(NULL));
+//     if(argc < 3)
+//     {
+//         printf("\nUsage: ./a.out filename iterations\n\n");
+//         exit(0);
+//     }
 
-    std::string filename(argv[1]);
-    int generations = atoi(argv[2]);
-    std::vector<int> result = run_max_clique(filename, generations);
+//     std::string filename(argv[1]);
+//     int generations = atoi(argv[2]);
+//     std::vector<int> result = run_max_clique(filename, generations);
 
-    printf("\nVertices in the Clique:\n");
+//     printf("\nVertices in the Clique:\n");
 
-    printf("\nSize: %d\n", (int)result.size());
-    for(auto a : result) {
-        printf(" %d", a);
-    }
+//     printf("\nSize: %d\n", (int)result.size());
+//     for(auto a : result) {
+//         printf(" %d", a);
+//     }
 
-    return 0;
-}
+//     return 0;
+// }

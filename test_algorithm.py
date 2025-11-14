@@ -4,7 +4,8 @@ from CliqueAI.clique_algorithms import (networkx_algorithm,
                                         scattering_clique_algorithm,
                                         clipper,
                                         ant_colony_algorithm,
-                                        mcp)
+                                        mcp,
+                                        genetic_algorithm)
 from CliqueAI.protocol import MaximumCliqueOfLambdaGraph
 
 data_paths = [
@@ -50,7 +51,7 @@ def main():
         synapse = get_test_data(data_path)
         print(f"Testing data from {data_path} with {synapse.number_of_nodes} nodes")
         # put your algorithm here
-        run(mcp, synapse)
+        run(genetic_algorithm, synapse)
 
 
 if __name__ == "__main__":
