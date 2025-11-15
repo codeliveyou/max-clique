@@ -14,7 +14,9 @@ CliqueAI/chain/snapshot.py
 CliqueAI/clique_algorithms/__init__.py
 CliqueAI/clique_algorithms/ant_colony_algorithm.py
 CliqueAI/clique_algorithms/clipper.py
+CliqueAI/clique_algorithms/genetic_algorithm.py
 CliqueAI/clique_algorithms/gnn_algorithm.py
+CliqueAI/clique_algorithms/mcp.py
 CliqueAI/clique_algorithms/networkx_algorithm.py
 CliqueAI/clique_algorithms/gnn_models/__init__.py
 CliqueAI/clique_algorithms/gnn_models/models/__init__.py

@@ -52,6 +52,8 @@ def main():
         print(f"Testing data from {data_path} with {synapse.number_of_nodes} nodes")
         # put your algorithm here
         run(genetic_algorithm, synapse)
+        # run(ant_colony_algorithm, synapse)
+        
 
 
 if __name__ == "__main__":
