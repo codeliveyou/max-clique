@@ -14,6 +14,11 @@ data_paths = [
     "test_data/general_0.4.json",
 ]
 
+directory_paths = [
+    "CliqueAI/clique_algorithms/saved_graph/0.1",
+    "CliqueAI/clique_algorithms/saved_graph/0.2",
+    "CliqueAI/clique_algorithms/saved_graph/0.4",
+]
 
 def get_test_data(data_path: str) -> MaximumCliqueOfLambdaGraph:
     with open(data_path, "r") as f:
@@ -47,6 +52,11 @@ def run(algorithm, synapse: MaximumCliqueOfLambdaGraph):
 
 
 def main():
+    for fname in os.listdir(directory_paths):
+        if not fname.endswith(".clq"):
+            continue
+        fpath = os.path.join(directory_paths, fname)
+    
     for data_path in data_paths:
         synapse = get_test_data(data_path)
         print(f"Testing data from {data_path} with {synapse.number_of_nodes} nodes")
