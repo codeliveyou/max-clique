@@ -124,15 +124,17 @@ def run(algorithm, synapse: MaximumCliqueOfLambdaGraph):
     return len(maximum_clique)
 
 def main():
-    csv_filename = "test_result.csv"
+    difficulty_list = ["0.1", "0.2", "0.4"]
+    difficulty = 1
+    csv_filename = f"test_result-{difficulty_list[difficulty]}.csv"
     with open(csv_filename, "w", newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["filename", "node_count", "genetic_count", "aca_count", "gnn_count", "networkx_count"])
 
-        for fname in os.listdir(directory_paths[0]):
+        for fname in os.listdir(directory_paths[difficulty]):
             if not fname.endswith(".clq"):
                 continue
-            fpath = os.path.join(directory_paths[0], fname)
+            fpath = os.path.join(directory_paths[difficulty], fname)
             synapse = get_test_data_from_clq(fpath)
             print(f"Testing data from {fpath} with {synapse.number_of_nodes} nodes")
             genetic_count = run(genetic_algorithm, synapse)
@@ -142,7 +144,6 @@ def main():
             print(f"G&A&S&N: {genetic_count}, {aca_count}, {gnn_count}, {networkx_count}")
             writer.writerow([fname, synapse.number_of_nodes, genetic_count, aca_count, gnn_count, networkx_count])
             csvfile.flush() 
-
     
     # for data_path in data_paths:
     #     synapse = get_test_data(data_path)
