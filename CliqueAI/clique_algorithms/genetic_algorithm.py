@@ -40,3 +40,5 @@ def genetic_algorithm(number_of_nodes: int, adjacency_list: list[list[int]], gen
 # nodes = 3
 # adj_list = [[1, 2], [0, 2], [0, 1]]
 # print(genetic_algorithm(nodes, adj_list, generations=1000))
+
+# c++ -I/home/user/project/include -O3 -Wall -shared -std=c++11 -fPIC $(python3 -m pybind11 --includes) gaClique.cpp gaclique_pybind.cpp -o gaclique$(python3-config --extension-suffix)

@@ -1,4 +1,7 @@
 import json
+import os
+import shutil
+import csv
 
 from CliqueAI.clique_algorithms import (networkx_algorithm,
                                         scattering_clique_algorithm,
@@ -27,6 +30,75 @@ def get_test_data(data_path: str) -> MaximumCliqueOfLambdaGraph:
     return synapse
 
 
+def get_test_data_from_clq(data_path: str) -> MaximumCliqueOfLambdaGraph:
+    number_of_nodes = None
+    number_of_edges = None
+    adjacency = []
+
+    with open(data_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("c"):
+                continue  # skip comments or empty lines
+            if line.startswith("p edge"):
+                # Example: p edge 100 200
+                _, _, nodes, edges = line.split()
+                number_of_nodes = int(nodes)
+                number_of_edges = int(edges)
+                # Initialize adjacency list for all nodes (1-based)
+                for i in range(1, number_of_nodes + 1):
+                    adjacency.append([])
+            elif line.startswith("e"):
+                _, u, v = line.split()
+                u, v = int(u) - 1, int(v) - 1
+                while len(adjacency) <= u:
+                    adjacency.append([])
+                adjacency[u].append(v)
+                while len(adjacency) <= v:
+                    adjacency.append([])
+                adjacency[v].append(u)
+
+    data = {
+        "name": "MaximumCliqueOfLambdaGraph",
+        "timeout": 30.0,
+        "total_size": 0,
+        "header_size": 0,
+        "dendrite": {
+            "status_code": None,
+            "status_message": None,
+            "process_time": None,
+            "ip": None,
+            "port": None,
+            "version": None,
+            "nonce": None,
+            "uuid": None,
+            "hotkey": None,
+            "signature": None
+        },
+        "axon": {
+            "status_code": None,
+            "status_message": None,
+            "process_time": None,
+            "ip": None,
+            "port": None,
+            "version": None,
+            "nonce": None,
+            "uuid": None,
+            "hotkey": None,
+            "signature": None
+        },
+        "computed_body_hash": "",
+        "uuid": "5ce9af7e-3cbb-422d-9768-ff139214dcfe",
+        "label": "general",
+        "number_of_nodes": number_of_nodes,
+        "adjacency_list": adjacency,
+        "maximum_clique": []
+    }
+    
+    synapse = MaximumCliqueOfLambdaGraph.model_validate(data)
+    return synapse
+
+
 def check_clique(adjacency_list: list[list[int]], clique: list[int]) -> bool:
     clique_set = set(clique)
     for i in range(len(clique)):
@@ -49,20 +121,35 @@ def run(algorithm, synapse: MaximumCliqueOfLambdaGraph):
         print("Invalid clique found by algorithm!")
     else:
         print(f"Clique size: {len(maximum_clique)}")
-
+    return len(maximum_clique)
 
 def main():
-    for fname in os.listdir(directory_paths):
-        if not fname.endswith(".clq"):
-            continue
-        fpath = os.path.join(directory_paths, fname)
+    csv_filename = "test_result.csv"
+    with open(csv_filename, "w", newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["filename", "node_count", "genetic_count", "aca_count", "gnn_count", "networkx_count"])
+
+        for fname in os.listdir(directory_paths[0]):
+            if not fname.endswith(".clq"):
+                continue
+            fpath = os.path.join(directory_paths[0], fname)
+            synapse = get_test_data_from_clq(fpath)
+            print(f"Testing data from {fpath} with {synapse.number_of_nodes} nodes")
+            genetic_count = run(genetic_algorithm, synapse)
+            aca_count = run(ant_colony_algorithm, synapse)
+            gnn_count = run(scattering_clique_algorithm, synapse)
+            networkx_count = run(networkx_algorithm, synapse)
+            print(f"G&A&S&N: {genetic_count}, {aca_count}, {gnn_count}, {networkx_count}")
+            writer.writerow([fname, synapse.number_of_nodes, genetic_count, aca_count, gnn_count, networkx_count])
+            csvfile.flush() 
+
     
-    for data_path in data_paths:
-        synapse = get_test_data(data_path)
-        print(f"Testing data from {data_path} with {synapse.number_of_nodes} nodes")
-        # put your algorithm here
-        run(genetic_algorithm, synapse)
-        # run(ant_colony_algorithm, synapse)
+    # for data_path in data_paths:
+    #     synapse = get_test_data(data_path)
+    #     print(f"Testing data from {data_path} with {synapse.number_of_nodes} nodes")
+    #     # put your algorithm here
+    #     run(genetic_algorithm, synapse)
+    #     # run(ant_colony_algorithm, synapse)
         
 
 
