@@ -1,0 +1,5 @@
+filename,node_count,genetic_count,aca_count,gnn_count,networkx_count
+graph_20251114_122854.clq,291,29,30
+graph_20251115_041704.clq,297,38,39
+graph_20251114_083032.clq,297,24,24
+graph_20251114_192310.clq,291,27,27

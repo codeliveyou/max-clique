@@ -124,27 +124,27 @@ def run(algorithm, synapse: MaximumCliqueOfLambdaGraph):
     return len(maximum_clique)
 
 def main():
-    difficulty_list = ["0.1", "0.2", "0.4"]
-    difficulty = 1
-    csv_filename = f"clipper-{difficulty_list[difficulty]}.csv"
-    with open(csv_filename, "w", newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["filename", "node_count", "genetic_count", "aca_count", "gnn_count", "networkx_count"])
+    # difficulty_list = ["0.1", "0.2", "0.4"]
+    # difficulty = 1
+    # csv_filename = f"clipper-{difficulty_list[difficulty]}.csv"
+    # with open(csv_filename, "w", newline='') as csvfile:
+    #     writer = csv.writer(csvfile)
+    #     writer.writerow(["filename", "node_count", "genetic_count", "aca_count", "gnn_count", "networkx_count"])
 
-        for fname in os.listdir(directory_paths[difficulty]):
-            if not fname.endswith(".clq"):
-                continue
-            fpath = os.path.join(directory_paths[difficulty], fname)
-            synapse = get_test_data_from_clq(fpath)
-            print(f"Testing data from {fpath} with {synapse.number_of_nodes} nodes")
-            genetic_count = run(genetic_algorithm, synapse)
+    for fname in os.listdir(directory_paths[difficulty]):
+        if not fname.endswith(".clq"):
+            continue
+        fpath = os.path.join(directory_paths[difficulty], fname)
+        synapse = get_test_data_from_clq(fpath)
+        print(f"Testing data from {fpath} with {synapse.number_of_nodes} nodes")
+        genetic_count = run(genetic_algorithm, synapse)
             # aca_count = run(ant_colony_algorithm, synapse)
             # gnn_count = run(scattering_clique_algorithm, synapse)
             # networkx_count = run(networkx_algorithm, synapse)
-            clipper_count = run(clipper, synapse)
-            print(f"G&C: {genetic_count}, {clipper_count}")
-            writer.writerow([fname, synapse.number_of_nodes, genetic_count, clipper_count])
-            csvfile.flush()
+            # clipper_count = run(clipper, synapse)
+            # print(f"G&C: {genetic_count}, {clipper_count}")
+            # writer.writerow([fname, synapse.number_of_nodes, genetic_count, clipper_count])
+            # csvfile.flush()
     
     # for data_path in data_paths:
     #     synapse = get_test_data(data_path)
