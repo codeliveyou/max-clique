@@ -124,8 +124,8 @@ def run(algorithm, synapse: MaximumCliqueOfLambdaGraph):
     return len(maximum_clique)
 
 def main():
-    # difficulty_list = ["0.1", "0.2", "0.4"]
-    # difficulty = 1
+    difficulty_list = ["0.1", "0.2", "0.4"]
+    difficulty = 2
     # csv_filename = f"clipper-{difficulty_list[difficulty]}.csv"
     # with open(csv_filename, "w", newline='') as csvfile:
     #     writer = csv.writer(csvfile)

@@ -31,9 +31,67 @@ def save_clq_file(number_of_nodes, adjacency_list, folder="saved_graph"):
     return full_path
 
 
-def genetic_algorithm(number_of_nodes: int, adjacency_list: list[list[int]], generations=500) -> list[int]:
+def genetic_algorithm(number_of_nodes: int, adjacency_list: list[list[int]], generations=500, populationNum=10, localImprovement=10, mutations=1, uniqueIterations=100, shuffleTolerance=10) -> list[int]:
     clq_filename = save_clq_file(number_of_nodes, adjacency_list)
-    max_clique = gaclique.run_max_clique(clq_filename, generations)
+    max_clique = []
+    parameters = [
+        [500, 10, 10, 1, 100, 10],
+        [500, 5, 10, 1, 100, 10],
+        [500, 15, 10, 1, 100, 10],
+        [500, 20, 10, 1, 100, 10],
+        [500, 10, 10, 5, 100, 10],
+        [500, 10, 10, 10, 100, 10],
+        [500, 10, 10, 1, 50, 10],
+        [500, 10, 10, 1, 100, 5],
+        [500, 10, 10, 15, 100, 10],
+        # [500, 10, 10, 20, 100, 10]
+    ]
+    for parameter in parameters:
+        tmp_max_clique = gaclique.run_max_clique(clq_filename, parameter[0], parameter[1], parameter[2], parameter[3], parameter[4], parameter[5])
+        if len(tmp_max_clique) > len(max_clique):
+            max_clique = tmp_max_clique.copy()
+        print(f"{parameter}: {len(tmp_max_clique)}")
+
+    # print("Mutations", end='')
+    # for i in range(1, 11):
+    #     tmp_max_clique = gaclique.run_max_clique(clq_filename, generations, populationNum, localImprovement, i, uniqueIterations, shuffleTolerance)
+    #     if len(tmp_max_clique) > len(max_clique):
+    #         max_clique = tmp_max_clique.copy()
+    #     print(f", {i}: {len(tmp_max_clique)}", end='')
+    # print("")
+
+    # print("Populations", end='')
+    # for i in range(5, 16):
+    #     tmp_max_clique = gaclique.run_max_clique(clq_filename, generations, i, localImprovement, mutations, uniqueIterations, shuffleTolerance)
+    #     if len(tmp_max_clique) > len(max_clique):
+    #         max_clique = tmp_max_clique.copy()
+    #     print(f", {i}: {len(tmp_max_clique)}", end='')
+    # print("")
+
+    # print("LocalImprovement", end='')
+    # for i in range(5, 16):
+    #     tmp_max_clique = gaclique.run_max_clique(clq_filename, generations, populationNum, i, mutations, uniqueIterations, shuffleTolerance)
+    #     if len(tmp_max_clique) > len(max_clique):
+    #         max_clique = tmp_max_clique.copy()
+    #     print(f", {i}: {len(tmp_max_clique)}", end='')
+    # print("")
+
+    # print("UniqueIterations", end='')
+    # for i in range(50, 151, 10):
+    #     tmp_max_clique = gaclique.run_max_clique(clq_filename, generations, populationNum, localImprovement, mutations, i, shuffleTolerance)
+    #     if len(tmp_max_clique) > len(max_clique):
+    #         max_clique = tmp_max_clique.copy()
+    #     print(f", {i}: {len(tmp_max_clique)}", end='')
+    # print("")
+
+    # print("ShuffleTolerance", end='')
+    # for i in range(5, 16):
+    #     tmp_max_clique = gaclique.run_max_clique(clq_filename, generations, populationNum, localImprovement, mutations, uniqueIterations, i)
+    #     if len(tmp_max_clique) > len(max_clique):
+    #         max_clique = tmp_max_clique.copy()
+    #     print(f", {i}: {len(tmp_max_clique)}", end='')
+    # print("")
+
     print("Genetic algorithm result: ", len(max_clique))
     return [(x - 1) for x in max_clique]
 
