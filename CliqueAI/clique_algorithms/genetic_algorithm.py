@@ -47,10 +47,13 @@ def genetic_algorithm(number_of_nodes: int, adjacency_list: list[list[int]], gen
         # [500, 10, 10, 20, 100, 10]
     ]
     for parameter in parameters:
-        tmp_max_clique = gaclique.run_max_clique(clq_filename, parameter[0], parameter[1], parameter[2], parameter[3], parameter[4], parameter[5])
-        if len(tmp_max_clique) > len(max_clique):
-            max_clique = tmp_max_clique.copy()
-        print(f"{parameter}: {len(tmp_max_clique)}")
+        try:
+            tmp_max_clique = gaclique.run_max_clique(clq_filename, parameter[0], parameter[1], parameter[2], parameter[3], parameter[4], parameter[5])
+            if len(tmp_max_clique) > len(max_clique):
+                max_clique = tmp_max_clique.copy()
+            print(f"{parameter}: {len(tmp_max_clique)}")
+        except Exception as e:
+            print(f"Error running with parameters {parameter}: {e}")
 
     # print("Mutations", end='')
     # for i in range(1, 11):
@@ -92,11 +95,7 @@ def genetic_algorithm(number_of_nodes: int, adjacency_list: list[list[int]], gen
     #     print(f", {i}: {len(tmp_max_clique)}", end='')
     # print("")
 
-    print("Genetic algorithm result: ", len(max_clique))
+    # print("Genetic algorithm result: ", len(max_clique))
     return [(x - 1) for x in max_clique]
-
-# nodes = 3
-# adj_list = [[1, 2], [0, 2], [0, 1]]
-# print(genetic_algorithm(nodes, adj_list, generations=1000))
 
 # c++ -I/home/user/project/include -O3 -Wall -shared -std=c++11 -fPIC $(python3 -m pybind11 --includes) gaClique.cpp gaclique_pybind.cpp -o gaclique$(python3-config --extension-suffix)

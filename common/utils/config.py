@@ -95,7 +95,7 @@ def add_args(cls, parser):
         "--neuron.autoupdate",
         type=int,
         help="If set, the neuron will check for updates and update itself.",
-        default=1,
+        default=0,
     )
 
 

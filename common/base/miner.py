@@ -101,8 +101,8 @@ class BaseMinerNeuron(BaseNeuron):
                 # Check autoupdate status.
                 if self.config.neuron.autoupdate:
                     bt.logging.info("Checking for updates...")
-                    if update_repo_if_needed():
-                        raise KeyboardInterrupt()
+                    # if update_repo_if_needed():
+                    #     raise KeyboardInterrupt()
 
                 # Sync metagraph and potentially set weights.
                 self.sync()
