@@ -8,7 +8,8 @@ from CliqueAI.clique_algorithms import (networkx_algorithm,
                                         clipper,
                                         ant_colony_algorithm,
                                         mcp,
-                                        genetic_algorithm)
+                                        genetic_algorithm,
+                                        jaya_main)
 from CliqueAI.protocol import MaximumCliqueOfLambdaGraph
 
 data_paths = [
@@ -29,6 +30,8 @@ def get_test_data(data_path: str) -> MaximumCliqueOfLambdaGraph:
     synapse = MaximumCliqueOfLambdaGraph.model_validate(data)
     return synapse
 
+tsum = 0
+cnt = 0
 
 def get_test_data_from_clq(data_path: str) -> MaximumCliqueOfLambdaGraph:
     number_of_nodes = None
@@ -94,6 +97,10 @@ def get_test_data_from_clq(data_path: str) -> MaximumCliqueOfLambdaGraph:
         "adjacency_list": adjacency,
         "maximum_clique": []
     }
+    global tsum, cnt
+    tsum = tsum + float(number_of_edges) / (number_of_nodes * (number_of_nodes - 1) / 2)
+    cnt = cnt + 1
+    print(f"N&E: {number_of_nodes}, {number_of_edges}, {float(number_of_edges) / (number_of_nodes * (number_of_nodes - 1) / 2)}, {tsum / cnt}")
     
     synapse = MaximumCliqueOfLambdaGraph.model_validate(data)
     return synapse
@@ -125,8 +132,8 @@ def run(algorithm, synapse: MaximumCliqueOfLambdaGraph):
 
 def main():
     difficulty_list = ["0.1", "0.2", "0.4"]
-    difficulty = 2
-    # csv_filename = f"clipper-{difficulty_list[difficulty]}.csv"
+    difficulty = 0
+    # csv_filename = f"1201-clipper_battle-{difficulty_list[difficulty]}.csv"
     # with open(csv_filename, "w", newline='') as csvfile:
     #     writer = csv.writer(csvfile)
     #     writer.writerow(["filename", "node_count", "genetic_count", "aca_count", "gnn_count", "networkx_count"])
@@ -137,14 +144,15 @@ def main():
         fpath = os.path.join(directory_paths[difficulty], fname)
         synapse = get_test_data_from_clq(fpath)
         print(f"Testing data from {fpath} with {synapse.number_of_nodes} nodes")
+        jaya_count = run(jaya_main, synapse)
         genetic_count = run(genetic_algorithm, synapse)
             # aca_count = run(ant_colony_algorithm, synapse)
             # gnn_count = run(scattering_clique_algorithm, synapse)
             # networkx_count = run(networkx_algorithm, synapse)
             # clipper_count = run(clipper, synapse)
-            # print(f"G&C: {genetic_count}, {clipper_count}")
-            # writer.writerow([fname, synapse.number_of_nodes, genetic_count, clipper_count])
-            # csvfile.flush()
+        print(f"G&J: {genetic_count}, {jaya_count}")
+        # writer.writerow([fname, synapse.number_of_nodes, genetic_count, jaya_count])
+        # csvfile.flush()
     
     # for data_path in data_paths:
     #     synapse = get_test_data(data_path)
