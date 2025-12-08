@@ -5,3 +5,4 @@ from .clipper import clipper
 from .mcp import mcp
 from .genetic_algorithm import genetic_algorithm
 from .jaya import jaya_main
+from .jaya_new import jaya_new_main
