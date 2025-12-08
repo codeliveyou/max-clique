@@ -62,7 +62,7 @@ def jaya(population, soluLimit, graph):
         i += 1
     return sorted(population, key = lambda x : x[0])
 
-def runJaya(population, soluLimit, decRate, iteration, fitnessLimit, graph):
+def runJaya(population, soluLimit, iteration, fitnessLimit, graph):
     global starTime, timeLimit, endFlag
     for i in range(iteration):
         population = jaya(population, soluLimit, graph)
@@ -119,7 +119,7 @@ def getBest(connGraphs, goodNodes, findFirst, graph):
             return
         selNodes = goodNodes.difference(nodes)
         for node in selNodes:
-            if nodes <= set(graph[nodes]):
+            if nodes <= set(graph[node]):
                 newNodes = deepcopy(nodes)
                 newNodes.add(node)
                 n = len(newNodes)
