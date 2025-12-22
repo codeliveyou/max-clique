@@ -133,7 +133,7 @@ def getBest(connGraphs, goodNodes, findFirst, graph):
                     bestLength = max(bestLength, n)
             node += 1
 
-def endProgram():
+def endProgram(graph):
     global visited, bestLength
     if len(visited):
         bestNodes = visited[bestLength][0]
