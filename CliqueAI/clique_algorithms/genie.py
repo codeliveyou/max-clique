@@ -1,155 +1,210 @@
-from random  import randint, random, sample
 from itertools import combinations
-from copy import deepcopy
-from re import subn
-from time import time 
+from random import sample
+from time import time
+from typing import List, Set, Dict, Tuple, Optional
 
-global startTime, timeLimit, bestLength, bestNodes, setLocalBest, visited
-startTime = time()
-timeLimit = 29.3
-bestLength, bestNodes = 0, set()
-setLocalBest = []
-visited ={}
 
-combLimit = 15
-numNodes = (100, 300, 500)
-goodLimits = (200, 100, 50) # Control Parameter
-deltas = (1, 1, 1)
+def genie_clique(number_of_nodes: int, adjacency_list: List[List[int]]) -> List[int]:
+    """
+    Heuristic maximum clique finder (based on your original code structure).
 
-test = 1
-rate = 870
-graphSize = numNodes[test] - randint(0, 10)
-goodLimit = goodLimits[test]
-delta = deltas[test]
+    Args:
+        number_of_nodes: total number of nodes in the graph (0..n-1)
+        adjacency_list: adjacency list where adjacency_list[u] is a list of neighbors of u
 
-def geneRandomGraph(graphSize, rate):
-    edges =[]
-    for u in range(graphSize):
-        for v in range(u+1, graphSize):
-            if random() * 1000 <= rate:
-                edges.append([u, v])
-    return edges
+    Returns:
+        A list of node indices representing the best clique found (bestNodes).
+    """
 
-def getMatrix(graphSize, edges):
-    ans = [set() for _ in range(graphSize)]
-    for edge in edges:
-        ans[edge[0]].add(edge[1])
-        ans[edge[1]].add(edge[0])
-    return ans
+    # -----------------------------
+    # Reset "global" state per call
+    # -----------------------------
+    startTime = time()
+    timeLimit = 29.3
 
-def getLinkNodes(subNodes, graph):
-    i, ans = 0, set()
-    for link in graph:
-        if subNodes <=link:
-            ans.add(i)
-        i += 1
-    return ans
+    bestLength: int = 0
+    bestNodes: Set[int] = set()
+    setLocalBest: List[Set[int]] = []
+    visited: Dict[int, List[Set[int]]] = {}
 
-def addBestSet(subNodes, source):
-    global setLocalBest, bestLength, bestNodes
-    if subNodes not in setLocalBest:
-        setLocalBest.append(subNodes)
-        if len(subNodes) > bestLength:
-            bestLength = len(subNodes)
-            bestNodes = subNodes
-            # print( bestLength, i, source, check_clique(graph, list(bestNodes)), time() - startTime)
-            return True
-    return False
+    # -----------------------------
+    # Tunables (same idea as yours)
+    # -----------------------------
+    combLimit = 15
+    # you can adjust these per n; keeping your original selection logic
+    numNodes = (100, 300, 500)
+    goodLimits = (200, 100, 50)  # Control Parameter
+    deltas = (1, 1, 1)
 
-def localBest(subNodes, linkNodes, graph, source):
-    global bestLength
-    if not linkNodes:
-        print("one best")
-        return addBestSet(subNodes, source)
-    for size in range(len(linkNodes), 0, -1):
-        if size + len(subNodes) < bestLength:
-            return False
-        for nodes in combinations(linkNodes, size):
-            if all(set(nodes) - {nodes} <= graph[node] for node in nodes):
-                newNodes = subNodes.union(nodes)
-                addBestSet(newNodes, source)
-    return False
+    # choose bucket by size (simple mapping similar to your original "test")
+    if number_of_nodes <= 120:
+        test = 0
+    elif number_of_nodes <= 380:
+        test = 1
+    else:
+        test = 2
 
-def mainFind(solutions, graph, goodLimit, source):
-    while solutions:
-        if time() - startTime > timeLimit:
-            return
-        # print(i , len(solutions[0][0]), len(solutions))
-        maxLinkLen, buf = 0, []
-        for solution in solutions:
-            lenNode, lenLink = len(solution[0]), len (solution[1])
-            if lenNode + lenLink >= bestLength:
+    goodLimit = goodLimits[test]
+    delta = deltas[test]
+
+    # ------------------------------------
+    # Normalize adjacency to list[set[int]]
+    # (makes subset/intersection checks fast)
+    # ------------------------------------
+    # We also clamp to number_of_nodes and remove self loops defensively.
+    graph: List[Set[int]] = []
+    for u in range(number_of_nodes):
+        neigh = set(adjacency_list[u]) if u < len(adjacency_list) else set()
+        neigh.discard(u)
+        neigh = {v for v in neigh if 0 <= v < number_of_nodes}
+        graph.append(neigh)
+
+    # -----------------------------
+    # Helper functions (closures)
+    # -----------------------------
+    def getLinkNodes(subNodes: Set[int]) -> Set[int]:
+        """Return nodes that connect to ALL nodes in subNodes."""
+        ans: Set[int] = set()
+        for i, link in enumerate(graph):
+            if subNodes <= link:
+                ans.add(i)
+        return ans
+
+    def addBestSet(subNodes: Set[int], source: str) -> bool:
+        nonlocal bestLength, bestNodes, setLocalBest
+        if subNodes not in setLocalBest:
+            setLocalBest.append(subNodes)
+            if len(subNodes) > bestLength:
+                bestLength = len(subNodes)
+                bestNodes = subNodes
+                return True
+        return False
+
+    def localBest(subNodes: Set[int], linkNodes: Set[int], source: str) -> bool:
+        nonlocal bestLength
+        if not linkNodes:
+            return addBestSet(subNodes, source)
+
+        linkNodes_list = list(linkNodes)
+        for size in range(len(linkNodes_list), 0, -1):
+            if size + len(subNodes) < bestLength:
+                return False
+            for nodes in combinations(linkNodes_list, size):
+                # Check that nodes themselves form a clique
+                if all(set(nodes) - {node} <= graph[node] for node in nodes):
+                    newNodes = subNodes.union(nodes)
+                    addBestSet(newNodes, source)
+        return False
+
+    def mainFind(solutions: List[Tuple[Set[int], Set[int]]], source: str) -> None:
+        nonlocal visited, bestLength
+
+        while solutions:
+            if time() - startTime > timeLimit:
+                return
+
+            maxLinkLen = 0
+            buf: List[Tuple[Set[int], Set[int]]] = []
+
+            for subNodes, linkSet in solutions:
+                lenNode = len(subNodes)
+                lenLink = len(linkSet)
+
+                if lenNode + lenLink < bestLength:
+                    continue
+
                 if lenLink > combLimit:
-                    linkInfo = sorted([[node, solution[1].intersection(graph[node])]for node in solution[1]], key = lambda x:len(x[1]), reverse = True)
-                    if len(linkInfo[0][1]) > maxLinkLen:
-                        maxLinkLen = len(linkInfo[0][1])
+                    # For each candidate node in linkSet, compute its reduced link set
+                    linkInfo = sorted(
+                        [(node, linkSet.intersection(graph[node])) for node in linkSet],
+                        key=lambda x: len(x[1]),
+                        reverse=True,
+                    )
+
+                    if not linkInfo:
+                        continue
+
+                    top_len = len(linkInfo[0][1])
+                    if top_len > maxLinkLen:
+                        maxLinkLen = top_len
                         buf = []
-                    for link in linkInfo:
+
+                    for node, reduced_links in linkInfo:
                         if time() - startTime > timeLimit:
                             return
-                        if len(link[1]) == maxLinkLen:
-                            try: 
-                                newNodes = solution[0].union({link[0]})
-                                if newNodes not in visited[maxLinkLen]:
-                                    buf.append([newNodes, link[1]])
-                                    visited[maxLinkLen].append(newNodes)
-                            except KeyError:
-                                buf.append([newNodes, link[1]])
-                                visited[maxLinkLen] = [newNodes]
-                        else:
+                        if len(reduced_links) != maxLinkLen:
                             break
+
+                        newNodes = subNodes.union({node})
+
+                        # visited buckets by maxLinkLen (same concept as your code)
+                        if maxLinkLen not in visited:
+                            visited[maxLinkLen] = [newNodes]
+                            buf.append((newNodes, reduced_links))
+                        else:
+                            if newNodes not in visited[maxLinkLen]:
+                                visited[maxLinkLen].append(newNodes)
+                                buf.append((newNodes, reduced_links))
                 else:
-                    localBest(solution[0], solution[1], graph, source)
-        solutions = buf if len(buf) < goodLimit else sample(buf, goodLimit)
+                    localBest(subNodes, linkSet, source)
 
-def additionalFind(subNodes, graph, delta):
-    for i in range(l, delta + 1):
-        for nodes in combinations(subNodes, len(subNodes) - i):
-            if len(subNodes) < bestLength or time() - startTime > timeLimit:
+            # reduce branching
+            if not buf:
                 return
-            nodes = set(nodes)
-            link = getLinkNodes(nodes, graph)
-            if len(nodes) + len(link) > bestLength:
-                mainFind([[nodes, getLinkNodes(nodes, graph)]], graph, goodLimit, "thread")
+            solutions = buf if len(buf) < goodLimit else sample(buf, goodLimit)
 
-def check_clique(adjucency_list, clique):
-    clique_set = set(clique)
-    for i in range(len(clique)):
-        node = clique[i]
-        neighbours = set(adjucency_list[node])
-        if not clique_set.issubset(neighbours. union([node])):
-            print("no connect")
-            return False
-    for v in range(len(adjucency_list)):
-        if v in clique_set:
-            continue
-        if all(v in adjucency_list[node] for node in clique):
-            print("sub net")
-            return False
-    return True
+    def additionalFind(subNodes: Set[int]) -> None:
+        nonlocal bestLength
 
-edges = geneRandomGraph(graphSize, rate)
-graph = getMatrix(graphSize, edges)
+        # try dropping 1..delta nodes from a found clique-candidate to explore neighbors
+        for i in range(1, delta + 1):
+            if time() - startTime > timeLimit:
+                return
+            if len(subNodes) - i <= 0:
+                continue
 
-population = sorted([[{node}, link] for node, link in enumerate(graph)], key = lambda x:len(x[1]), reverse = True)
-i = 0
-for solution in population:
-# for solution in population[:300] ## this is option for an instead of above, it can be run with this one
-    i += 1
-    if time() - startTime > timeLimit:
-        break
-    mainFind([solution], graph, goodLimit, "main")
-    # print(i, time() - startTime)
-# print("localbest", len(setLocalBest), time() - startTime)
-# print("best", check_clique(graph, list(bestNodes)), len(bestNodes))
-i = 0
-setLocalBest.sort(key = lambda x: len(x))
-for solution in setLocalBest:
-    i += 1
-    if time() - startTime > timeLimit:
-        break
-    additionalFind(solution, graph, delta)
-while True:
-    if time() - startTime > 29.6:
-        print(bestNodes)
-        break
+            for nodes in combinations(subNodes, len(subNodes) - i):
+                if len(subNodes) < bestLength or time() - startTime > timeLimit:
+                    return
+                nodes_set = set(nodes)
+                link = getLinkNodes(nodes_set)
+                if len(nodes_set) + len(link) > bestLength:
+                    # Start a focused search from this reduced set
+                    mainFind([(nodes_set, link)], "thread")
+
+    # -----------------------------
+    # Main run (same flow as yours)
+    # -----------------------------
+    population: List[Tuple[Set[int], Set[int]]] = sorted(
+        [({node}, graph[node].copy()) for node in range(number_of_nodes)],
+        key=lambda x: len(x[1]),
+        reverse=True,
+    )
+
+    # for solution in population[:300]:
+    for solution in population:
+        if time() - startTime > timeLimit:
+            break
+        mainFind([solution], "main")
+
+    setLocalBest.sort(key=lambda x: len(x))
+    for sol in setLocalBest:
+        if time() - startTime > timeLimit:
+            break
+        additionalFind(sol)
+
+    return list(sorted(bestNodes))
+
+
+# # -----------------------------
+# # Example usage (remove in prod)
+# # -----------------------------
+# if __name__ == "__main__":
+#     # Small demo graph: triangle (0,1,2) plus extra node 3 connected to 0 only
+#     adj = [
+#         [1, 2, 3],  # 0
+#         [0, 2],     # 1
+#         [0, 1],     # 2
+#         [0],        # 3
+#     ]
+#     print(genie_clique(4, adj))  # likely [0,1,2]

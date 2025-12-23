@@ -51,9 +51,10 @@ def genetic_algorithm(number_of_nodes: int, adjacency_list: list[list[int]], gen
             tmp_max_clique = gaclique.run_max_clique(clq_filename, parameter[0], parameter[1], parameter[2], parameter[3], parameter[4], parameter[5])
             if len(tmp_max_clique) > len(max_clique):
                 max_clique = tmp_max_clique.copy()
-            print(f"{parameter}: {len(tmp_max_clique)}")
+            # print(f"{parameter}: {len(tmp_max_clique)}")
         except Exception as e:
-            print(f"Error running with parameters {parameter}: {e}")
+            pass
+            # print(f"Error running with parameters {parameter}: {e}")
 
     # print("Mutations", end='')
     # for i in range(1, 11):

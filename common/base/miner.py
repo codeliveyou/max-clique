@@ -37,7 +37,7 @@ class BaseMinerNeuron(BaseNeuron):
                 "You are allowing non-registered entities to send requests to your miner. This is a security risk."
             )
         # The axon handles request processing, allowing validators to send this miner requests.
-        self.axon = bt.axon(
+        self.axon = bt.Axon(
             wallet=self.wallet,
             config=self.config() if callable(self.config) else self.config,
         )
@@ -175,10 +175,10 @@ class BaseMinerNeuron(BaseNeuron):
         # Sync the metagraph.
         self.metagraph.sync(subtensor=self.subtensor)
 
-    async def forward(self, synapse: bt.synapse) -> bt.synapse:
+    async def forward(self, synapse: bt.Synapse) -> bt.Synapse:
         return synapse
 
-    async def blacklist(self, synapse: bt.synapse) -> typing.Tuple[bool, str]:
+    async def blacklist(self, synapse: bt.Synapse) -> typing.Tuple[bool, str]:
         """
         Determines whether an incoming request should be blacklisted and thus ignored. Your implementation should
         define the logic for blacklisting requests based on your needs and desired security parameters.
@@ -188,7 +188,7 @@ class BaseMinerNeuron(BaseNeuron):
         requests before they are deserialized to avoid wasting resources on requests that will be ignored.
 
         Args:
-            synapse (bt.synapse): A synapse object constructed from the headers of the incoming request.
+            synapse (bt.Synapse): A synapse object constructed from the headers of the incoming request.
 
         Returns:
             Tuple[bool, str]: A tuple containing a boolean indicating whether the synapse's hotkey is blacklisted,
@@ -237,7 +237,7 @@ class BaseMinerNeuron(BaseNeuron):
         )
         return False, "Hotkey recognized!"
 
-    async def priority(self, synapse: bt.synapse) -> float:
+    async def priority(self, synapse: bt.Synapse) -> float:
         """
         The priority function determines the order in which requests are handled. More valuable or higher-priority
         requests are processed before others. You should design your own priority mechanism with care.
@@ -245,7 +245,7 @@ class BaseMinerNeuron(BaseNeuron):
         This implementation assigns priority to incoming requests based on the calling entity's stake in the metagraph.
 
         Args:
-            synapse (bt.synapse): The synapse object that contains metadata about the incoming request.
+            synapse (bt.Synapse): The synapse object that contains metadata about the incoming request.
 
         Returns:
             float: A priority score derived from the stake of the calling entity.

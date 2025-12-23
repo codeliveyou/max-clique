@@ -9,7 +9,11 @@ from CliqueAI.clique_algorithms import (networkx_algorithm,
                                         ant_colony_algorithm,
                                         mcp,
                                         genetic_algorithm,
-                                        jaya_main)
+                                        jaya_main,
+                                        genie_clique,
+                                        genie_clique_jr,
+                                        max_clique_portfolio,
+                                        genie_clique_cpp)
 from CliqueAI.protocol import MaximumCliqueOfLambdaGraph
 
 data_paths = [
@@ -132,7 +136,7 @@ def run(algorithm, synapse: MaximumCliqueOfLambdaGraph):
 
 def main():
     difficulty_list = ["0.1", "0.2", "0.4"]
-    difficulty = 0
+    difficulty = 2
     # csv_filename = f"1201-clipper_battle-{difficulty_list[difficulty]}.csv"
     # with open(csv_filename, "w", newline='') as csvfile:
     #     writer = csv.writer(csvfile)
@@ -144,14 +148,15 @@ def main():
         fpath = os.path.join(directory_paths[difficulty], fname)
         synapse = get_test_data_from_clq(fpath)
         print(f"Testing data from {fpath} with {synapse.number_of_nodes} nodes")
-        jaya_count = run(jaya_main, synapse)
+        max_clique_portfolio_count = run(genie_clique_cpp, synapse)
         genetic_count = run(genetic_algorithm, synapse)
             # aca_count = run(ant_colony_algorithm, synapse)
             # gnn_count = run(scattering_clique_algorithm, synapse)
             # networkx_count = run(networkx_algorithm, synapse)
             # clipper_count = run(clipper, synapse)
-        print(f"G&J: {genetic_count}, {jaya_count}")
-        # writer.writerow([fname, synapse.number_of_nodes, genetic_count, jaya_count])
+        
+        print(f"G&J: {genetic_count}, {max_clique_portfolio_count}, {float(sum(len(n) for n in synapse.adjacency_list)) / (synapse.number_of_nodes * (synapse.number_of_nodes - 1))}")
+        # writer.writerow([fname, synapse.number_of_nodes, genetic_count, genie_count])
         # csvfile.flush()
     
     # for data_path in data_paths:

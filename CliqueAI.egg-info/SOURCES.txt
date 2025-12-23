@@ -16,7 +16,16 @@ CliqueAI/clique_algorithms/ant_colony_algorithm.py
 CliqueAI/clique_algorithms/classify_graph.py
 CliqueAI/clique_algorithms/clipper.py
 CliqueAI/clique_algorithms/genetic_algorithm.py
+CliqueAI/clique_algorithms/genie.py
+CliqueAI/clique_algorithms/genie1.py
+CliqueAI/clique_algorithms/genie2.py
+CliqueAI/clique_algorithms/genie_clique_cpp.py
+CliqueAI/clique_algorithms/genie_jr.py
 CliqueAI/clique_algorithms/gnn_algorithm.py
+CliqueAI/clique_algorithms/jaya.py
+CliqueAI/clique_algorithms/jaya_new.py
+CliqueAI/clique_algorithms/max_clique_portfolio.py
+CliqueAI/clique_algorithms/max_clique_portfolio_cpp1.py
 CliqueAI/clique_algorithms/mcp.py
 CliqueAI/clique_algorithms/networkx_algorithm.py
 CliqueAI/clique_algorithms/gnn_models/__init__.py

@@ -53,7 +53,7 @@ class BaseValidatorNeuron(BaseNeuron):
         bt.logging.info("load_state()")
         self.load_state()
 
-        self.axon = bt.axon(
+        self.axon = bt.Axon(
             wallet=self.wallet,
             config=self.config() if callable(self.config) else self.config,
         )
@@ -77,7 +77,7 @@ class BaseValidatorNeuron(BaseNeuron):
 
         bt.logging.info("serving ip to chain...")
         try:
-            self.axon = bt.axon(wallet=self.wallet, config=self.config)
+            self.axon = bt.Axon(wallet=self.wallet, config=self.config)
 
             try:
                 bt.logging.info(

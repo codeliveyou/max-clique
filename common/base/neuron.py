@@ -29,8 +29,8 @@ class BaseNeuron(ABC):
     def config(cls):
         return config(cls)
 
-    subtensor: "bt.subtensor"
-    wallet: "bt.wallet"
+    subtensor: "bt.Subtensor"
+    wallet: "bt.Wallet"
     metagraph: "bt.metagraph"
 
     @property
@@ -56,8 +56,8 @@ class BaseNeuron(ABC):
         # These are core Bittensor classes to interact with the network.
         bt.logging.info("Setting up bittensor objects.")
 
-        self.wallet = bt.wallet(config=self.config)
-        self.subtensor = bt.subtensor(
+        self.wallet = bt.Wallet(config=self.config)
+        self.subtensor = bt.Subtensor(
             network=self.config.subtensor.network, config=self.config
         )
         self.metagraph = self.subtensor.metagraph(self.config.netuid)
